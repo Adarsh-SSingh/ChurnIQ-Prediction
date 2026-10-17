@@ -11,9 +11,6 @@ import time
 # pyright: reportPossiblyUnboundVariable=false
 warnings.filterwarnings("ignore")
 
-# ================================================================
-# PAGE CONFIG
-# ================================================================
 st.set_page_config(
     page_title="ChurnIQ — AI Analytics",
     page_icon="🌌",
@@ -21,12 +18,21 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# ================================================================
-# DEEP SPACE NEON CSS
-# ================================================================
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+    /* ---------- KILL THE SPINNER & DIM EFFECT ---------- */
+    [data-testid="stStatusWidget"], .stSpinner, [data-testid="stConnectionStatus"] { 
+        display: none !important; 
+    }
+    .stApp, [data-testid="stAppViewContainer"] {
+        opacity: 1 !important;
+        transition: none !important;
+    }
+    .element-container, .stSelectbox, .stNumberInput {
+        opacity: 1 !important;
+    }
 
     /* ---------- BASE ---------- */
     * { font-family: 'Inter', sans-serif; box-sizing: border-box; }
@@ -484,11 +490,8 @@ with tab_predict:
     # ============================================================
     if st.session_state.wizard_step == 1:
         
-        st.markdown("""
-        <div class="form-section">
-            <div class="form-section-title">Personal Information</div>
-            <div class="form-section-desc">Basic demographics about the customer.</div>
-        """, unsafe_allow_html=True)
+        st.markdown('<div class="form-section-title">Personal Information</div>', unsafe_allow_html=True)
+        st.markdown('<div class="form-section-desc">Basic demographics about the customer.</div>', unsafe_allow_html=True)
         
         c1, c2, c3, c4 = st.columns(4, gap="medium")
         with c1:
@@ -501,13 +504,10 @@ with tab_predict:
         with c4:
             dependents = st.selectbox("Dependents", ["Yes", "No"], key="k_dep")
         
-        st.markdown("</div>", unsafe_allow_html=True)
+        st.markdown("<hr style='border-color: rgba(255,255,255,0.05); margin: 1.5rem 0;'>", unsafe_allow_html=True)
 
-        st.markdown("""
-        <div class="form-section">
-            <div class="form-section-title">Account & Contract</div>
-            <div class="form-section-desc">Tenure, contract type, and billing preferences.</div>
-        """, unsafe_allow_html=True)
+        st.markdown('<div class="form-section-title">Account & Contract</div>', unsafe_allow_html=True)
+        st.markdown('<div class="form-section-desc">Tenure, contract type, and billing preferences.</div>', unsafe_allow_html=True)
         
         c1, c2, c3 = st.columns(3, gap="medium")
         with c1:
@@ -527,13 +527,10 @@ with tab_predict:
         with c3:
             total = st.number_input("Total Charges ($)", 0.0, 10000.0, 1000.0, step=10.0, key="k_total")
         
-        st.markdown("</div>", unsafe_allow_html=True)
+        st.markdown("<hr style='border-color: rgba(255,255,255,0.05); margin: 1.5rem 0;'>", unsafe_allow_html=True)
 
-        st.markdown("""
-        <div class="form-section">
-            <div class="form-section-title">Services Subscribed</div>
-            <div class="form-section-desc">Services and add-ons the customer uses.</div>
-        """, unsafe_allow_html=True)
+        st.markdown('<div class="form-section-title">Services Subscribed</div>', unsafe_allow_html=True)
+        st.markdown('<div class="form-section-desc">Services and add-ons the customer uses.</div>', unsafe_allow_html=True)
         
         c1, c2, c3 = st.columns(3, gap="medium")
         with c1:
@@ -559,12 +556,11 @@ with tab_predict:
         with c2:
             movies = st.selectbox("Streaming Movies", ["Yes", "No", "No internet service"], key="k_mov")
         
-        st.markdown("</div>", unsafe_allow_html=True)
 
         st.markdown("<br>", unsafe_allow_html=True)
         c_btn1, c_btn2, c_btn3 = st.columns([1, 2, 1])
         with c_btn2:
-            predict_btn = st.button("🔮 Predict Churn", type="primary", use_container_width=True)
+            predict_btn = st.button("🔮 Predict Churn", type="primary", width='stretch')
         
         if predict_btn and MODEL_LOADED:
             input_data = {
@@ -697,7 +693,7 @@ with tab_predict:
                 paper_bgcolor="rgba(0,0,0,0)", font_color="#f8fafc",
                 height=260, margin=dict(l=20, r=20, t=20, b=20)
             )
-            st.plotly_chart(fig_g, use_container_width=True)
+            st.plotly_chart(fig_g, width='stretch')
             st.markdown("</div>", unsafe_allow_html=True)
             
             diff = prob * 100 - 26.5
@@ -775,7 +771,7 @@ with tab_predict:
         st.markdown("<br>", unsafe_allow_html=True)
         c1, c2, c3 = st.columns(3, gap="medium")
         with c1:
-            if st.button("↺ Predict Another", use_container_width=True, key="btn_reset"):
+            if st.button("↺ Predict Another", width='stretch', key="btn_reset"):
                 st.session_state.prediction = None
                 st.session_state.wizard_step = 1
                 st.session_state.show_profile = False
@@ -791,18 +787,18 @@ with tab_predict:
                 data=csv,
                 file_name=f"churniq_report_{pd.Timestamp.now().strftime('%Y%m%d_%H%M%S')}.csv",
                 mime="text/csv",
-                use_container_width=True,
+                width='stretch',
                 key="btn_download"
             )
         with c3:
-            if st.button("👤 View Profile", use_container_width=True, key="btn_profile"):
+            if st.button("👤 View Profile", width='stretch', key="btn_profile"):
                 st.session_state.show_profile = not st.session_state.show_profile
         
         if st.session_state.show_profile:
             with st.expander("Full Customer Profile", expanded=True):
                 display_df = p["df"].T.reset_index()
                 display_df.columns = ["Feature", "Value"]
-                st.dataframe(display_df, use_container_width=True, hide_index=True)
+                st.dataframe(display_df, width='stretch', hide_index=True)
     
     else:
         st.session_state.wizard_step = 1
@@ -835,7 +831,7 @@ with tab_insights:
         )
         fig.update_xaxes(showgrid=False, color="#64748b")
         fig.update_yaxes(showgrid=True, gridcolor="rgba(255,255,255,0.05)", color="#64748b")
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width='stretch')
         st.markdown("</div>", unsafe_allow_html=True)
     
     with col2:
@@ -855,7 +851,7 @@ with tab_insights:
         )
         fig2.update_xaxes(showgrid=False, color="#64748b")
         fig2.update_yaxes(showgrid=True, gridcolor="rgba(255,255,255,0.05)", color="#64748b")
-        st.plotly_chart(fig2, use_container_width=True)
+        st.plotly_chart(fig2, width='stretch')
         st.markdown("</div>", unsafe_allow_html=True)
 
 # ================================================================
